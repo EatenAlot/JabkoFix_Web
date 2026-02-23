@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JabkoFix – Oprava produktů Apple</title>
+<link rel="shortcut icon" href="Logo_bez_pozadi.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.repair-form {
+    max-width: 600px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #ff4fa3;
+    box-shadow: 0 0 15px rgba(255,79,163,0.3);
+}
+
+/* Loading spinner */
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: none;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+button.loading .btn-text {
+    opacity: 0.7;
+}
+
+button.loading .spinner {
+    display: inline-block;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #0b0b0f;
+    color: #f5f5f5;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ===== APPLE-LIKE SOFT DEPTH BACKGROUND ===== */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: -20%;
+    background:
+        radial-gradient(circle at 25% 30%, rgba(255,79,163,0.25), transparent 50%),
+        radial-gradient(circle at 75% 70%, rgba(255,122,195,0.18), transparent 55%),
+        radial-gradient(circle at 50% 50%, rgba(120,0,255,0.08), transparent 60%);
+    filter: blur(60px);
+    z-index: -2;
+}
+
+/* jemný tmavý přechod shora dolů pro lepší čitelnost */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(10,10,15,0.6),
+        rgba(10,10,15,0.85)
+    );
+    z-index: -1;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+header {
+    position: fixed;
+    width: 100%;
+    background: rgba(15,10,13,0.9);
+    backdrop-filter: blur(10px);
+    padding: 15px 0;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(90deg,#ff4fa3,#ff7ac3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.IG {
+    font-size: 16px;
+    font-weight: 700;
+    background: linear-gradient(90deg,#ff4fa3,#ff7ac3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 400;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: #ff7ac3;
+}
+
+.btn {
+    background: linear-gradient(90deg,#ff4fa3,#ff7ac3);
+    padding: 12px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.btn:hover {
+    box-shadow: 0 0 20px rgba(255,79,163,0.6);
+    transform: translateY(-2px);
+}
+
+
+/* HERO */
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #cfcfcf;
+    margin-bottom: 30px;
+}
+
+/* SECTIONS */
+section {
+    padding: 100px 0;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 60px;
+    font-weight: 600;
+}
+
+.services {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+    gap: 30px;
+}
+
+.card {
+    background: rgba(255,255,255,0.03);
+    padding: 30px;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    border: 1px solid #ff4fa3;
+    box-shadow: 0 0 25px rgba(255,79,163,0.3);
+    transform: translateY(-5px);
+}
+
+.card h3 {
+    margin-bottom: 15px;
+    color: #ff7ac3;
+}
+
+/* WHY US */
+.features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    text-align: center;
+}
+
+.feature {
+    flex: 1 1 200px;
+}
+
+/* CONTACT */
+.contact {
+    text-align: center;
+}
+
+footer {
+    text-align: center;
+    padding: 30px 0;
+    background: rgba(0,0,0,0.3);
+    font-size: 14px;
+    color: #aaa;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+    .hero h1 {
+        font-size: 32px;
+    }
+    nav ul {
+        display: none;
+    }
+}
+
+.repair-form {
+    max-width: 600px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #ff4fa3;
+    box-shadow: 0 0 15px rgba(255,79,163,0.3);
+}
+
+.delivery-options {
+    display: flex;
+    gap: 25px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.osobni-options {
+    display: flex;
+    gap: 25px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.checkbox-container {
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    font-size: 14px;
+    user-select: none;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 18px;
+    width: 18px;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+    background-color: rgba(255,255,255,0.2);
+}
+
+.checkbox-container input:checked ~ .checkmark {
+    background-color: #ff4fa3;
+    box-shadow: 0 0 10px rgba(255,79,163,0.5);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.checkbox-container .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.map-link {
+    color: #ff7ac3;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.map-link:hover {
+    text-shadow: 0 0 10px rgba(255,79,163,0.6);
+}
+
+.map-link.premium {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    color: #ff7ac3;
+    transition: color 0.4s ease;
+}
+
+.map-link.premium .arrow {
+    font-size: 14px;
+    opacity: 0.5;
+    transform: translate(0, 0);
+    transition: 
+        transform 0.4s cubic-bezier(.19,1,.22,1),
+        opacity 0.4s ease;
+}
+
+
+.map-link.premium:hover {
+    color: #ffffff;
+}
+
+.map-link.premium:hover .arrow {
+    opacity: 1;
+    transform: translate(5px, -3px);
+}
+
+/* CENÍK */
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap: 30px;
+}
+
+.price-card {
+    background: rgba(255,255,255,0.03);
+    padding: 30px;
+    border-radius: 20px;
+    transition: 0.4s;
+}
+
+.price-card:hover {
+    border: 1px solid #ff4fa3;
+    box-shadow: 0 0 25px rgba(255,79,163,0.25);
+    transform: translateY(-5px);
+}
+
+.price-card h3 {
+    margin-bottom: 20px;
+    color: #ff7ac3;
+}
+
+.price-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.price-card li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 14px;
+}
+
+.price-card li span {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.price-note {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 13px;
+    color: #aaa;
+}
+
+.simple-pricing {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pricing-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 16px;
+}
+
+.pricing-row span:last-child {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.price-note {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.highlight-missing {
+    background: rgba(255,79,163,0.15);
+    color: #ff7ac3;
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+.legal-section {
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #ccc;
+}
+.legal-section h3 {
+    margin-top: 40px;
+    color: #ff7ac3;
+}
+
+.footer-links a {
+    position: relative;
+    color: #ff7ac3;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.4s ease;
+}
+
+
+
+.footer-links a:hover {
+    color: #ffffff;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <nav>
+            <div class="logo">JabkoFix</div>
+            <ul>
+                <li><a href="#sluzby">Služby</a></li>
+                <li><a href="#proc">Proč my</a></li>
+                <li><a href="#kontakt">Kontakt</a></li>
+            </ul>
+            <a href="#objednat" class="btn">Objednat opravu</a>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <h1>Oprava produktů Apple</h1>
+        <p>Rychle. Kvalitně. Bez kompromisů.</p>
+        <a href="#objednat" class="btn">Objednat opravu</a>
+    </div>
+</section>
+
+<section id="sluzby">
+    <div class="container">
+        <h2 class="section-title">Co opravujeme</h2>
+        <div class="services">
+            <div class="card">
+                <h3>📱 Prasklý displej</h3>
+                <p>Rychlá a precizní výměna displeje s kvalitními díly.</p>
+            </div>
+            <div class="card">
+                <h3>🔋 Baterie</h3>
+                <p>Obnovíme výdrž vašeho telefonu výměnou baterie.</p>
+            </div>
+            <div class="card">
+                <h3>📸 Fotoaparát</h3>
+                <p>Oprava nebo výměna poškozené kamery.</p>
+            </div>
+            <div class="card">
+                <h3>🔌 Nabíjení</h3>
+                <p>Řešení problémů s nabíjecím konektorem.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="cenik">
+    <div class="container">
+        <h2 class="section-title">Orientační ceník</h2>
+
+        <div class="simple-pricing">
+
+            <div class="pricing-row">
+                <span>Výměna displeje</span>
+                <span>od 1 990 Kč</span>
+            </div>
+
+            <div class="pricing-row">
+                <span>Výměna baterie</span>
+                <span>od 990 Kč</span>
+            </div>
+
+            <div class="pricing-row">
+                <span>Oprava nabíjení</span>
+                <span>od 1 190 Kč</span>
+            </div>
+
+            <div class="pricing-row">
+                <span>Oprava fotoaparátu</span>
+                <span>individuálně</span>
+            </div>
+
+            <div class="pricing-row">
+                <span>Diagnostika</span>
+                <span>zdarma</span>
+            </div>
+
+        </div>
+
+        <p class="price-note">
+            Každá oprava je individuální. Přesnou cenu vám sdělíme po diagnostice zařízení.
+        </p>
+
+        <div style="text-align:center; margin-top:40px;">
+            <a href="#objednat" class="btn">Objednat opravu</a>
+        </div>
+
+    </div>
+</section>
+<section id="proc">
+        <div class="container">
+            <h2 class="section-title">Proč si vybrat nás</h2>
+        </div>
+        <div class="features">
+            <div class="feature">
+                <h3>⚡ Rychlost</h3>
+                <p>Většinu oprav zvládneme do 2-3 dnů.</p>
+            </div>
+            <div class="feature">
+                <h3>💎 Kvalita</h3>
+                <p>Používáme kvalitní náhradní díly.</p>
+            </div>
+            <div class="feature">
+                <h3>💰 Férové ceny</h3>
+                <p>Žádné skryté poplatky.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="kontakt" class="contact">
+    <div class="container">
+        <h2 class="section-title">Kontaktujte nás</h2>
+        <p>📱 +420 702 601 509</p>
+        <p>📧 JabkoFix@email.cz</p>
+        <p>
+            📍 
+            <a href="https://www.google.com/maps/search/?api=1&query=Kunčice+nad+Labem+108"
+            target="_blank"
+            class="map-link premium">
+       
+            <span class="text">Kunčice nad Labem 108</span>
+            <span class="arrow">↗</span>
+
+            </a>
+        </p>
+        <p>💭 Instagram: <a href="https://www.instagram.com/jabko_fix/" class="IG" target="_blank"> @jabko_fix</a> </p>
+        <br>
+        <!--<a href="tel:+420702601509" class="btn">Zavolat nyní</a>-->
+    </div>
+</section>
+
+
+
+<section id="objednat" style="padding:120px 0;">
+    <div class="container">
+        <h2 class="section-title">Objednat opravu</h2>
+
+        <form id="repairForm" class="repair-form">
+
+            <div class="form-group">
+                <label>Jméno</label>
+                <input type="text" name="name" placeholder="Zadejte celé vaše jméno" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Zadejte svůj Email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Telefon</label>
+                <input type="tel" name="phone" placeholder="Zadejte kontaktní tel. číslo" required>
+            </div>
+
+            <div class="form-group">
+                <label>Model iPhonu</label>
+                <input type="text" name="model" placeholder="Zadejte celý název včetně modelu (Pro, Max, ProMax)" required>
+            </div>
+
+            <div class="form-group">
+                <label>Popis problému</label>
+                <textarea name="problem" rows="4" required></textarea>
+                <div class="delivery-options">
+                    <label class="checkbox-container">
+                    <input type="checkbox" name="delivery" value="Osobní předání">
+                    <span class="checkmark"></span>
+                    Osobní předání
+                    </label>
+
+                    <label class="checkbox-container">
+                    <input type="checkbox" name="delivery" value="Kurýrní služba">
+                    <span class="checkmark"></span>
+                    Kurýrní služba (hrazená zákazníkem)
+                    </label>
+                </div>
+                <div class="osobni-options">
+                    <label class="checkbox-container">
+                    <input type="checkbox" name="osobni" value="Osobní údaje">
+                    <span class="checkmark"></span>
+                    Souhlasím se zpracováním osobních údajů
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                <span class="btn-text">Odeslat objednávku</span>
+                <span class="spinner"></span>
+            </button>
+
+            <p id="formMessage" style="margin-top:15px;"></p>
+
+        </form>
+    </div>
+</section>
+
+<!--PUBLIC KEY - hWOrG1-3Dny2oLL7k  -->
+<!--SERVICE ID - service_wfkgfuf -->
+<!--TEMPLATE ID - template_6g0iv1n -->
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<script>
+(function(){
+    emailjs.init("hWOrG1-3Dny2oLL7k");
+})();
+
+/* checkbox radio-like chování */
+document.querySelectorAll('input[name="delivery"]').forEach(box => {
+    box.addEventListener('change', function() {
+        document.querySelectorAll('input[name="delivery"]').forEach(cb => {
+            if (cb !== this) cb.checked = false;
+        });
+    });
+});
+
+/* checkbox radio-like chování */
+document.querySelectorAll('input[name="osobni"]').forEach(box => {
+    box.addEventListener('change', function() {
+        document.querySelectorAll('input[name="osobni"]').forEach(cb => {
+            if (cb !== this) cb.checked = false;
+        });
+    });
+});
+
+document.getElementById("repairForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById("submitBtn");
+    const message = document.getElementById("formMessage");
+
+    message.innerHTML = "";
+
+    /* === VALIDACE DOPRAVY === */
+    const deliveryOptions = document.querySelectorAll('input[name="delivery"]');
+    let selectedDelivery = "";
+
+    deliveryOptions.forEach(option => {
+        if (option.checked) {
+            selectedDelivery = option.value;
+        }
+    });
+
+    if (!selectedDelivery) {
+        message.innerHTML = "❌ Vyberte prosím způsob předání zařízení.";
+        return;
+    }
+
+    /* === VALIDACE ZPRACOVÁNÍ OSOBNÍCH ÚDAJŮ === */
+        const osobniOptions = document.querySelectorAll('input[name="osobni"]');
+        let selectedOsobni = "";
+
+        osobniOptions.forEach(option => {
+        if (option.checked) {
+            selectedOsobni = option.value;
+        }
+    });
+
+    if (!selectedOsobni) {
+        message.innerHTML = "❌ Potvrďte prosím souhlas se zpracováním osobních údajů.";
+        return;
+    }
+
+    /* === ZAPNUTÍ LOADINGU AŽ TEĎ === */
+    btn.classList.add("loading");
+    btn.disabled = true;
+
+emailjs.sendForm(
+    "service_wfkgfuf",
+    "template_6g0iv1n",
+    this
+).then(function(response) {
+
+    if (response.status === 200) {
+
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        document.getElementById("repairForm").reset();
+
+        message.innerHTML = "✅ Objednávka byla úspěšně odeslána. Brzy vás budeme kontaktovat.";
+        message.style.color = "#4BB543";
+
+    } else {
+        throw new Error("Status není 200");
+    }
+
+}).catch(function(error) {
+
+    console.error("EmailJS error:", error);
+
+    btn.classList.remove("loading");
+    btn.disabled = false;
+
+    message.innerHTML = "❌ Nastala chyba při odesílání. Zkuste to prosím znovu.";
+    message.style.color = "#ff4fa3";
+});
+});
+
+setTimeout(() => {
+    btn.classList.remove("loading");
+    btn.disabled = false;
+}, 10000);
+</script>
+
+<footer>
+    <div class="footer-content">
+        <div>
+            © 2026 JabkoFix – Oprava produktů Apple
+        </div>
+
+        <div class="footer-links">
+            <a href="gdpr.html" target="_blank">Zásady ochrany osobních údajů</a> <br>
+            <a href="podminky.html" target="_blank">Obchodní podmínky</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
