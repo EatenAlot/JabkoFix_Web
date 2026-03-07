@@ -19,15 +19,6 @@ gtag('config', 'G-LM9H7Z28GB');
 <link rel="shortcut icon" href="Logo_bez_pozadi.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17981890479"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'AW-17981890479');
-</script>
 
 <!-- Event snippet for Kontakt conversion page -->
 <script>
@@ -836,6 +827,13 @@ emailjs.sendForm(
 ).then(function(response) {
 
     if (response.status === 200) {
+
+            /* email pro zákazníka */
+        emailjs.sendForm(
+        "service_wfkgfuf",
+        "template_wt6mrsn",
+        document.getElementById("repairForm")
+    );
 
         btn.classList.remove("loading");
         btn.disabled = false;
